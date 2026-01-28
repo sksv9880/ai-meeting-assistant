@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>AI Agent Controller</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --accent-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --bg-color: #f7f9fc;
+            --card-bg: #ffffff;
+            --text-primary: #1a202c;
+            --text-secondary: #718096;
+            --success-color: #4CAF50;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            width: 280px;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            overflow: hidden;
+            font-size: 13px;
+        }
+
+        .header {
+            background: var(--primary-gradient);
+            padding: 15px;
+            color: white;
+            border-bottom-left-radius: var(--radius-lg);
+            border-bottom-right-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .title-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            font-size: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            margin: 0;
+            font-size: 11px;
+            opacity: 0.8;
+            font-weight: 500;
+        }
+
+        .settings-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .settings-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(45deg);
+        }
+
+        .container {
+            padding: 20px;
+            position: relative;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            padding: 16px;
+            margin-bottom: 16px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .status-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .status-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #ccc;
+            border-radius: 50%;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .status-text {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .settings-panel {
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 0;
+            opacity: 0;
+        }
+
+        .settings-panel.open {
+            max-height: 250px;
+            opacity: 1;
+            margin-bottom: 16px;
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            transition: all 0.2s;
+            background: #f8fafc;
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            font-family: inherit;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(118, 75, 162, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .btn-stop {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 75, 43, 0.3);
+        }
+
+        .btn-stop:hover {
+            box-shadow: 0 6px 20px rgba(255, 75, 43, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text-secondary);
+            border: 1px solid #e2e8f0;
+            margin-top: 12px;
+            font-size: 12px;
+            padding: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #f8fafc;
+            color: var(--text-primary);
+            border-color: #cbd5e0;
+        }
+
+        .btn-test {
+            background: transparent;
+            border: 1px dashed #cbd5e0;
+            color: var(--text-secondary);
+            font-size: 11px;
+            margin-top: 8px;
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        .btn-test:hover {
+            border-color: #667eea;
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            align-items: flex-end;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            height: 85%;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #edf2f7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text-primary);
+        }
+
+        .close-btn {
+            background: #f1f5f9;
+            border: none;
+            color: var(--text-secondary);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 18px;
+        }
+
+        .close-btn:hover {
+            background: #e2e8f0;
+            color: var(--text-primary);
+        }
+
+        .logs-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            font-family: 'SF Mono', 'Roboto Mono', Menlo, monospace;
+            font-size: 11px;
+            color: #4a5568;
+            background: #f8fafc;
+        }
+
+        .log-entry {
+            margin-bottom: 8px;
+            padding: 8px 0;
+            border-bottom: 1px solid #edf2f7;
+            line-height: 1.5;
+            word-break: break-all;
+        }
+
+        .log-time {
+            color: #a0aec0;
+            margin-right: 6px;
+            font-size: 10px;
+        }
+
+        /* Success/Running State */
+        .running .status-dot {
+            background-color: var(--success-color);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+            animation: pulse 2s infinite;
+        }
+
+        .running .status-text {
+            color: var(--success-color);
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 6px rgba(76, 175, 80, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+            }
+        }
+
+        /* Test Feedback */
+        #testStatus {
+            font-size: 11px;
+            margin-top: 5px;
+            text-align: center;
+            height: 14px;
+            transition: opacity 0.3s;
+            opacity: 0;
+        }
+
+        #testStatus.visible {
+            opacity: 1;
+        }
+
+        #testStatus.success {
+            color: var(--success-color);
+        }
+
+        #testStatus.error {
+            color: #e53e3e;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="header-top">
+            <div class="title-area">
+                <div class="logo-icon">🤖</div>
+                <div>
+                    <h1>AI Agent</h1>
+                    <div class="subtitle">Meeting Assistant</div>
+                </div>
+            </div>
+            <button id="settingsBtn" class="settings-btn" title="Settings">⚙️</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <div class="status-container">
+                <span class="status-label">System Status</span>
+                <div class="status-indicator" id="statusIndicator">
+                    <span class="status-dot" id="agentStatus"></span>
+                    <span class="status-text" id="statusText">Ready</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="settingsPanel" class="settings-panel">
+            <div class="card">
+                <div class="input-group">
+                    <label class="input-label" for="webhookInput">Bot Webhook (Trigger)</label>
+                    <input type="text" id="webhookInput" placeholder="https://n8n.example.com/webhook/..."
+                        spellcheck="false">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label" for="questionsWebhookInput">Agent Webhook (Polling)</label>
+                    <input type="text" id="questionsWebhookInput" placeholder="https://n8n.example.com/webhook/..."
+                        spellcheck="false">
+                </div>
+
+                <button id="testWebhookBtn" class="btn btn-test">Test Connections</button>
+                <div id="testStatus"></div>
+            </div>
+        </div>
+
+        <button id="toggleSessionBtn" class="btn btn-primary">Start Session</button>
+        <button id="showLogsBtn" class="btn btn-secondary">View System Logs</button>
+    </div>
+
+    <!-- Logs Modal -->
+    <div id="logsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">System Activity</span>
+                <button id="closeLogsBtn" class="close-btn">&times;</button>
+            </div>
+            <div id="logsContainer" class="logs-container">
+                <!-- Logs will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- We need to update popup.js to handle the new class names and elements if they changed IDs -->
+    <!-- Fortunately, I kept the IDs consistent with the repo version logic -->
+    <script src="popup.js"></script>
+</body>
+
+</html>
