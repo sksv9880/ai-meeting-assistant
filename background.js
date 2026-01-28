@@ -3,6 +3,7 @@ const POLLING_INTERVAL_MINUTES = 0.17; // 2 seconds (CRITICAL for low latency)
 let agentRunning = false;
 
 // Initialize state on every service worker wakeup
+// (e.g. when extension is loaded or background restarts)
 checkPollingStatus();
 
 chrome.runtime.onInstalled.addListener(() => {
